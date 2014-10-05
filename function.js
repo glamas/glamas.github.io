@@ -45,8 +45,8 @@ xmlhttp.onreadystatechange=function()
           }
         }
         txt=txt + "</div>";
+        txt=txt + "</div>";
     }
-    txt=txt + "</div>";
         /*
     txt="<table border='1'><tr><th>Title</th><th>Artist</th></tr>";
     x=xmlhttp.responseXML.documentElement.getElementsByTagName("CD");
@@ -102,8 +102,8 @@ function display_none(name_id)
         if(name_id.childNodes[2].style.display=='none'){
             name_id.childNodes[2].style.display='inline';
         }
-        else if(name_id.childNodes[3].style.display=='inline'){
-            name_id.childNodes[3].style.display='none';
+        else if(name_id.childNodes[2].style.display=='inline'){
+            name_id.childNodes[2].style.display='none';
         }
     }
 }
