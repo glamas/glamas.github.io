@@ -14,10 +14,10 @@ xmlhttp.onreadystatechange=function()
   {
   if (xmlhttp.readyState==4 && xmlhttp.status==200)
     {
-        txt="<div onclick='display_none(this)' >";
-    x=xmlhttp.responseXML.documentElement.getElementsByTagName("CD");
+        x=xmlhttp.responseXML.documentElement.getElementsByTagName("CD");
     for (i=0;i<x.length;i++)
     {
+        txt="<div onclick='display_none(this)' >";
         txt=txt + "<div class='record'>";
         xx=x[i].getElementsByTagName("TITLE");
         {
