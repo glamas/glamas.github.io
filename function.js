@@ -14,6 +14,39 @@ xmlhttp.onreadystatechange=function()
   {
   if (xmlhttp.readyState==4 && xmlhttp.status==200)
     {
+        txt="<div onclick='display_none(this) >'";
+    x=xmlhttp.responseXML.documentElement.getElementsByTagName("CD");
+    for (i=0;i<x.length;i++)
+    {
+        txt=txt + "<div class='record'>";
+        xx=x[i].getElementsByTagName("TITLE");
+        {
+        try
+        {
+            txt=txt + "<p>" + xx[0].firstChild.nodeValue + "</p>";
+        }
+        catch (er)
+        {
+            txt=txt + "<p> </p>";
+        }
+        }
+        txt=txt + "</div>";
+        txt=txt + "<div style='display:none;'";
+        xx=x[i].getElementsByTagName("ARTIST");
+        {
+        try
+          {
+          txt=txt + "<p>" + xx[0].firstChild.nodeValue + "</p>";
+          }
+        catch (er)
+          {
+          txt=txt + "<p> </p>";
+          }
+        }
+        txt=txt + "</div>";
+    }
+    txt=txt + "</div>";
+        /*
     txt="<table border='1'><tr><th>Title</th><th>Artist</th></tr>";
     x=xmlhttp.responseXML.documentElement.getElementsByTagName("CD");
     for (i=0;i<x.length;i++)
@@ -44,6 +77,7 @@ xmlhttp.onreadystatechange=function()
       txt=txt + "</tr>";
       }
     txt=txt + "</table>";
+    */
     document.getElementById('txtCDInfo').innerHTML=txt;
     }
   }
