@@ -88,7 +88,7 @@ xmlhttp.send();
 
 function display_none(name_id)
 {
-    //alert(name_id.childNodes.length);
+    alert(name_id.childNodes.length);
     if(name_id.childNodes.length == 5){
         if(name_id.childNodes[3].style.display=='none'){
             name_id.childNodes[3].style.display='inline';
