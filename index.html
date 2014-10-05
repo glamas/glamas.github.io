@@ -53,12 +53,21 @@ xmlhttp.onreadystatechange=function()
 xmlhttp.open("GET",url,true);
 xmlhttp.send();
 }
+
+
+function display_none(name_id)
+{
+    document.getElementById(name_id).style.display='none';
+}
 </script>
 </head>
 <body>
 
 <div id="txtCDInfo">
 <button onclick="loadXMLDoc('/cd_catalog.xml')">获得 CD 信息</button>
+</div>
+<div id='test' onclick='display_none(this)'>
+    <p>good luck is aroud you</p>
 </div>
 
 </body>
