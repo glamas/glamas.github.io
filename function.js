@@ -89,7 +89,7 @@ xmlhttp.send();
 
 function display_none(name_id)
 {
-    alert(name_id.childNodes.length);
+    //alert(name_id.childNodes.length);
     if(name_id.childNodes.length == 5){
         if(name_id.childNodes[3].style.display=='none'){
             name_id.childNodes[3].style.display='inline';
@@ -99,11 +99,11 @@ function display_none(name_id)
         }
     }
     if(name_id.childNodes.length == 2){        
-        if(name_id.childNodes[2].style.display=='none'){
-            name_id.childNodes[2].style.display='inline';
+        if(name_id.childNodes[1].style.display=='none'){
+            name_id.childNodes[1].style.display='inline';
         }
-        else if(name_id.childNodes[2].style.display=='inline'){
-            name_id.childNodes[2].style.display='none';
+        else if(name_id.childNodes[1].style.display=='inline'){
+            name_id.childNodes[1].style.display='none';
         }
     }
 }
