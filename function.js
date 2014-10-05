@@ -31,7 +31,7 @@ xmlhttp.onreadystatechange=function()
         }
         }
         txt=txt + "</div>";
-        txt=txt + "<div style='display:none;'";
+        txt=txt + "<div style='display:none;'>";
         xx=x[i].getElementsByTagName("ARTIST");
         {
         try
