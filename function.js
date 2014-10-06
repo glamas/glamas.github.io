@@ -1,91 +1,60 @@
-function loadXMLDoc(url)
+loadXML = function(xmlFile)
 {
-var xmlhttp;
-var txt,x,xx,i;
-if (window.XMLHttpRequest)
-  {// code for IE7+, Firefox, Chrome, Opera, Safari
-  xmlhttp=new XMLHttpRequest();
-  }
-else
-  {// code for IE6, IE5
-  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-  }
-xmlhttp.onreadystatechange=function()
-  {
-  if (xmlhttp.readyState==4 && xmlhttp.status==200)
-    {
-        txt="";
-        x=xmlhttp.responseXML.documentElement.getElementsByTagName("CD");
-    for (i=0;i<x.length;i++)
-    {
-        txt=txt + "<div onclick='display_none(this)'>";
-        txt=txt + "<div class='record'>";
-        xx=x[i].getElementsByTagName("TITLE");
-        {
-        try
-        {
-            txt=txt + "<p>" + xx[0].firstChild.nodeValue + "</p>";
-        }
-        catch (er)
-        {
-            txt=txt + "<p> </p>";
-        }
-        }
-        txt=txt + "</div>";
-        txt=txt + "<div style='display:none;'>";
-        xx=x[i].getElementsByTagName("ARTIST");
-        {
-        try
-          {
-          txt=txt + "<p>" + xx[0].firstChild.nodeValue + "</p>";
-          }
-        catch (er)
-          {
-          txt=txt + "<p> </p>";
-          }
-        }
-        txt=txt + "</div>";
-        txt=txt + "</div>";
+    var xmlDoc=null;
+    //支持IE浏览器  
+    if(window.ActiveXObject){  
+        xmlDoc=new ActiveXObject("Microsoft.XMLDOM");   
+    }  
+    //支持Mozilla浏览器  
+    else if(document.implementation && document.implementation.createDocument){  
+        xmlDoc = document.implementation.createDocument('','',null);  
+    }  
+    else{  
+        alert("wrong way");
+    }  
+    if(xmlDoc!=null){  
+        xmlDoc.async = false;  
+        xmlDoc.load(xmlFile);  
     }
-        /*
-    txt="<table border='1'><tr><th>Title</th><th>Artist</th></tr>";
-    x=xmlhttp.responseXML.documentElement.getElementsByTagName("CD");
-    for (i=0;i<x.length;i++)
-      {
-      txt=txt + "<tr>";
-      xx=x[i].getElementsByTagName("TITLE");
-        {
-        try
-          {
-          txt=txt + "<td>" + xx[0].firstChild.nodeValue + "</td>";
-          }
-        catch (er)
-          {
-          txt=txt + "<td> </td>";
-          }
-        }
-      xx=x[i].getElementsByTagName("ARTIST");
-        {
-        try
-          {
-          txt=txt + "<td>" + xx[0].firstChild.nodeValue + "</td>";
-          }
-        catch (er)
-          {
-          txt=txt + "<td> </td>";
-          }
-        }
-      txt=txt + "</tr>";
-      }
-    txt=txt + "</table>";
-    */
-    document.getElementById('txtCDInfo').innerHTML=txt;
-    }
-  }
-xmlhttp.open("GET",url,true);
-xmlhttp.send();
+    return xmlDoc;
 }
 
+function loadXMLDoc(Filename)
+{
+    var xmlFile = loadXML(Filename);
+    var txt,x,xx,i;
+    if(xmlFile == null) { return; }
+    txt = "";
+    x = xmlFile.getElementsByTagName("CD");
+    for(i=0;i<x.length;i++)
+    {
+        txt = txt + "<div onclick = 'display_none(this)'>";
+        txt = txt + "<div class='record'>";
+        xx = x[i].getElementsByTagName("TITLE");
+        {
+            try{
+                txt = txt + "<p>" + xx[0].firstChild.nodeValue + "</p>"
+            }
+            catch(er){
+                txt = txt + "<p>null</p>"; 
+            }
+        }
+        txt = txt + "</div>";
+        txt = txt + "<div style='display:none;'>";
+        xx = x[i].getElementsByTagName("ARTIST");
+        {
+            try{
+                txt = txt + "<p>" + xx[0].firstChild.nodeValue + "</p>"
+            }
+            catch(er){
+                txt = txt +"<p>null</p>";
+            }
+        }
+        txt = txt + "</div>";
+        txt = txt + "</div>";
+    }
+    document.getElementById('txtCDInfo').innerHTML=txt;
+}
 
 function display_none(name_id)
 {
