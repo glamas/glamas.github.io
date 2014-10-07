@@ -39,7 +39,7 @@ window.onload=function(){
         },
         View:function(){
             var  tablestr='<table>';
-              tablestr+='<tr><td colspan="3"></td><td>年:'+this.year+'</td><td colspan="3">月：'+this.month+'</td></tr>';
+              tablestr+='<tr><td colspan="3"></td><td>'+this.year+'年</td><td colspan="3">'+this.month+'月</td></tr>';
             tablestr+='<tr><td width="14%">日</td><td width="14%">一</td><td width="14%">二</td><td width="14%">三</td><td width="14%">四</td><td width="14%">五</td><td width="14%">六</td></tr>';
             var  index=1;
             //判断每月的第一天在哪个位置
@@ -100,6 +100,7 @@ window.onload=function(){
            // calenderDiv.style.color=this.options.fontColor;
            calenderDiv.style.color='red' ;
 
+            //点击对应日期的事件callback
            calenderDiv.onclick=function(e){
                 var  evt=e||window.event;
                 var   target=evt.srcElement||evt.target;
@@ -187,9 +188,15 @@ window.onload=function(){
               };
              dropdivstr+='</select>';
              dropDiv.innerHTML=dropdivstr;
+
              div.appendChild(dropDiv);
-           that.containerDiv.appendChild(div);
-    
+
+            var  todayBtn=document.createElement('input');
+             todayBtn.type='button';
+             todayBtn.value='回到今天';
+
+             div.appendChild(todayBtn);
+             that.containerDiv.appendChild(div);
 
              ///绑定选择年份和月份的事件
              var  ddlChange=function(){
@@ -212,6 +219,17 @@ window.onload=function(){
                  ddlChange();
                 
             }
+             //返回当天
+             todayBtn.onclick=function(){
+                that.date = new Date();
+                that.year=that.date.getFullYear();
+                that.month=that.date.getMonth()+1;
+                that.day=that.date.getDate();
+                that.containerDiv.removeChild(div);
+                resetPara(that.year,that.month-1,that.day);
+                that.Render();
+             }
+
         }
 
     }

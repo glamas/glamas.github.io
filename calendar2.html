@@ -1,0 +1,115 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>js日历效果-wangzf</title>
+</head>
+<style>
+html,body{height:100%;width:100%;}
+*{margin:0;padding:0;}
+.calendarBox{width:100%;}
+#calendar_control{background:#a3a3b4;}
+#calendar_control input{min-width:inherit;}
+#calendarBox{width:100%;height:100%;}
+#calendar_str{cursor:pointer;text-align:center;font-weight:lighter;}
+#calendar_body td{background:#f0f0f0;cursor:pointer;}
+#calendar_body td.taday{background:#0CF;}
+#calendar_body td.hot{background:#FF6;}
+#calendar_body th{background:#3f526f;color:#fff;}
+#calendar_body td,#calendar_body th{text-align:center;}
+</style>
+<script>
+var calendar={
+STR:function(){with(this.data)return ""+Y+"年，"+M+"月，"+D+"号，星期"+WN[W];},
+V:function(spli){with(this)return ""+data.Y+spli+data.M+spli+data.D},
+T:function(){with(this)return data.TABLE},
+dnY:function(){with(this){calendarChange(data.Y+1,data.M-1,data.D)}},
+dnM:function(){with(this){calendarChange(data.Y,data.M,data.D)}},
+upY:function(){with(this){calendarChange(data.Y-1,data.M-1,data.D)}},
+upM:function(){with(this){calendarChange(data.Y,data.M-2,data.D)}},
+day:function(o){with(this){data.D=o;calendarChange(data.Y,data.M-1,data.D)}},
+data:{Y:null,M:null,D:null,W:null,H:null,U:null,YMD:null,YMD_C:"hot",ARR:null,TABLE:null,MN:null,WN:null,SELECT:null,TADAY:new Date(),TADAY_C:"taday",ROWLEN:7,VALUE:null},
+creatTable:function(){with(this){
+var table="<table height=100% width=100%><tr>"
+for(var i=0;i<data.ROWLEN;i++){var t=data.WN[i]||" ";table+="<th>"+t+"</th>";}
+for(var i in data.ARR){var showText=data.ARR[i]||" ",br=i%data.ROWLEN,title,css="";
+if(!br){table+="</tr><tr>"};
+data.ARR[i]?title=data.Y+"-"+data.M+"-"+showText:title="";
+if(String(data.D)==String(data.ARR[i])){css+=" "+data.YMD_C;}
+if(data.YMD.getFullYear()==data.TADAY.getFullYear()&&data.YMD.getMonth()==data.TADAY.getMonth()&&String(data.TADAY.getDate())==String(data.ARR[i])){css=" "+data.TADAY_C}
+table+="<td title='"+title+"' class="+css+">"+showText+"</td>";
+}table+="</tr></table>"
+data.TABLE=table;return table;
+}},
+calendarStarArr:function(userY,userM,userD){with(this){
+var Arr=[];
+var now = new Date(userY,userM,userD);
+var LastDay = now.getLastDay();
+var FirstDayofWeek = now.FirstDayofWeek();
+data.YMD=now;data.Y=now.getFullYear();
+data.M=now.getMonth()+1;data.D=now.getDate();data.W=now.getDay();
+while(Arr.length!=FirstDayofWeek){Arr.push(false)}
+for(var i=0;i<LastDay;i++){Arr.push(i+1)}
+while(Arr.length%data.ROWLEN!=0){Arr.push(false)}
+data.ARR=Arr;return Arr;
+}},
+calendarChange:function(userY,userM,userD){with(this){
+calendarStarArr(userY,userM,userD);creatTable()
+}},
+calendarStar:function(userY,userM,userD){with(this){
+data.MN = ["零","一","二","三","四","五","六","七","八","九","十","十一","十二"];
+data.WN = ["日","一","二","三","四","五","六"];
+calendarChange(userY,userM,userD);
+}},
+init:function(){with(this){
+Date.prototype.getLastDay=function(){return(new Date(this.getFullYear(),this.getMonth()+1,0).getDate())}
+Date.prototype.FirstDayofWeek=function(){return(new Date(this.getFullYear(),this.getMonth(),1).getDay())}
+calendarStar(new Date().getFullYear(),new Date().getMonth(),new Date().getDate())
+}}
+}
+</script>
+<body id="body">
+<table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+<tr height="10%">
+<td><table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0" id="calendar_control">
+<tr>
+<th width="20%" align="left" scope="col">
+<input type="button" title="上一年" value="<<" id="calendar_upY" />
+<input type="button" title="上一月" value="<" id="calendar_upM" /></th>
+<th width="56%" id="calendar_str" scope="col" title="点击返回今天."></th>
+<th width="24%" align="right" scope="col">
+<input type="button" title="下一年" value=">>" id="calendar_dnY" />
+<input type="button" title="下一月" value=">" id="calendar_dnM" /></th>
+</tr>
+</table></td>
+</tr>
+<tr>
+<td height="90%" id="calendar_body"></td>
+</tr>
+</table>
+<script>
+calendar.init()
+function calendarChange(){
+var calendar_body=document.getElementById("calendar_body")
+calendar_body.innerHTML=calendar.T()//显示表格
+var calendar_str=document.getElementById("calendar_str")
+calendar_str.innerHTML=calendar.STR()//显示日期字符串
+calendarControl()//调用日历控制
+}
+calendarChange()//日历更新
+function calendarControl(){
+var calendar_str=document.getElementById("calendar_str")
+calendar_str.onclick=function(){ calendar.init();calendarChange()}//返回今天功能实现
+var calendar_dnY=document.getElementById("calendar_dnY")
+calendar_dnY.onclick=function(){ calendar.dnY();calendarChange()}//下一年 功能实现
+var calendar_dnM=document.getElementById("calendar_dnM")
+calendar_dnM.onclick=function(){ calendar.dnM();calendarChange()}//下一月 功能实现
+var calendar_upY=document.getElementById("calendar_upY")
+calendar_upY.onclick=function(){ calendar.upY();calendarChange()}//上一年 功能实现
+var calendar_upM=document.getElementById("calendar_upM")
+calendar_upM.onclick=function(){ calendar.upM();calendarChange()}//上一月 功能实现
+var calendar_day=document.getElementById("calendar_body").getElementsByTagName("td");
+for(var i in calendar_day){calendar_day[i].onclick=function(){var N=Number(this.innerText);if(N){calendar.day(N);calendarChange()}}}//当天日期 功能实现
+}
+</script>
+</body>
+</html> 
