@@ -1,0 +1,78 @@
+/*
+    filename:pure-extra.css
+    version :0.1.0
+    author  :glamas
+    date    :2016-03-18
+    font-family: Georgia, Verdana, Arial, Helvetica, Times, "Times New Roman", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+ */
+
+/* font */
+html { 
+    font-size: 16px;
+}
+body {
+    font-size: 1em;
+}
+html, button, input, select, textarea,
+.pure-g [class *= "pure-u"] {
+    /* Set your content font stack here: */
+    font-family: Verdana, Helvetica, Arial, Times, "Times New Roman", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+}
+
+/* ------ button ------ */
+/* button with rounded corners */
+/* over base button */
+/*.pure-button {
+}*/
+.button-success,
+.button-error,
+.button-warning {
+    color: white;
+    border-radius: 4px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+.button-success {
+    background: rgb(28, 184, 65); /* this is a green */
+}
+.button-error {
+    background: rgb(202, 60, 60); /* this is a maroon */
+}
+.button-warning {
+    background: rgb(223, 117, 20); /* this is an orange */
+}
+.button-example {
+    color: white;
+    border-radius: 4px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    background: rgb(66, 184, 221);
+}
+/* with different sizes */
+.button-xsmall {
+    font-size: 70%;
+}
+.button-small {
+    font-size: 85%;
+}
+.button-large {
+    font-size: 110%;
+}
+.button-xlarge {
+    font-size: 125%;
+}
+
+/* ------ menu ------ */
+.pure-menu-item {
+    /* defauls is 100%,overwrite it */
+  /*height: 2em;*/
+}
+
+/* ------ table ------ */
+/* use striped style, here set color */
+/*.pure-table-striped tr:nth-child(2n-1) td {
+    background-color: #f2f2f2;
+}*/
+
+/* margin */
+.mb-4{
+    margin-bottom: 0.25em;
+}
