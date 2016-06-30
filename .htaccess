@@ -1,0 +1,6 @@
+RewriteEngine on
+#RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} ^(.*).html$
+RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteRule ^(.*)$ /index.html?md=$1 [QSA,PT,L]
+RewriteRule ^(.*)$ blog.html?md=$1 [L]
