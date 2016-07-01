@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
   <title>blog + vue-js + pure-css</title>
@@ -53,7 +54,7 @@ window.onload = function () {
       }, function(){
         alert("can't access the server");
       });
-      this.$http.post("./test.md").then(function(response){
+      this.$http.get("./test.md").then(function(response){
         this.$set('content',converter.makeHtml(response.data));
       }, function(){
         alert("can't access the server");

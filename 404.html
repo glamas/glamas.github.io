@@ -1,12 +1,97 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset='utf8'></meta>
-<script type="text/javascript" src="./function.js">
+  <title>404</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Language" content="zh-CN" />
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="cache-control" content="no-cache">
+  <meta name="Keywords" content="" />
+  <meta name="Description" content="" />
+  <meta name="Author" content="glamas" />
+  <meta name="Copyright" content="" />
+  <!-- <link href="./image/favicon.ico" rel="Shortcut Icon" /> -->
+  <!-- <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css"> -->
+  <link rel="stylesheet" type="text/css" href="./css/pure-min.css">
+  <link rel="stylesheet" type="text/css" href="./css/pure-extra.css">
+  <!--[if lte IE 8]>
+      <link rel="stylesheet" type="text/css" href="./css/grids-responsive-old-ie-min.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+      <link rel="stylesheet" type="text/css" href="./css/grids-responsive-min.css">
+  <![endif]-->
+  <script type="text/javascript" src="./js/vue.js"></script>
+  <script type="text/javascript" src="./js/vue-resource.min.js"></script>
+  <script type="text/javascript" src="./js/showdown.min.js"></script>
+  <!-- <script type="text/javascript" src="./js/marked.js"></script> -->
 
-</script>
+  <script type="text/javascript">
+    window.onload = function () {
+      // var filename = ((window.location.pathname).match(/\/([^\/?#]+).html$/i) || [,''])[1]+".md";
+      // var marked = new marked();
+      // marked.setOptions({
+      //   renderer: new marked.Renderer(),
+      //   gfm: true,
+      //   tables: true,
+      //   breaks: false,
+      //   pedantic: false,
+      //   sanitize: true,
+      //   smartLists: true,
+      //   smartypants: false
+      // });
+      var converter = new showdown.Converter();
+      // converter.setOption('noHeaderId', true);
+      wm = new Vue({
+        el: '#app',
+        data: {
+          header: '',
+          content: ''
+        },
+        ready:function(){
+          this.$http.get('./test.tpl?v=0.1.0').then(function(response){
+            this.$set('header',response.data);
+          }, function(){
+            alert("can't access the server");
+          });
+          this.$http.get("./test.md").then(function(response){
+            this.$set('content',converter.makeHtml(response.data));
+          }, function(){
+            alert("can't access the server");
+          });
+        },
+      })
+
+    }
+  </script>
+  <script type="text/javascript">
+    function isSupportFileApi() {
+        if(window.File && window.FileList && window.FileReader && window.Blob) {
+            alert('The File APIs are supported in this browser!');//return true;
+        } else{
+        alert('The File APIs are not fully supported in this browser.');//return false;
+    }}
+  </script>
+
 </head>
 <body>
-<p style="color:red;">404 not found!</p>
+
+<div class="pure-g" id="app">
+  <div class="pure-u-1">
+    <div>test</div>
+    <div><button onclick="isSupportFileApi()">test html5</button></div>
+  </div>
+  <div class="pure-u-1">
+    <div>vue-resource抓取后台数据</div>
+    <div>{{{ header }}}</div>
+  </div>
+  <div class="pure-u-1">
+    <div>markdown test</div>
+    <div>{{{ content }}}</div>
+  </div>
+
+
+</div>
+
 </body>
 </html>
