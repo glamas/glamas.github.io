@@ -27,7 +27,7 @@
 
 <script type="text/javascript">
 window.onload = function () {
-  var filename = ((window.location.pathname).match(/\/([^\/?#]+).html$/i) || [,''])[1]+".md";
+  // var filename = ((window.location.pathname).match(/\/([^\/?#]+).html$/i) || [,''])[1]+".md";
   // var marked = new marked();
   // marked.setOptions({
   //   renderer: new marked.Renderer(),
@@ -53,7 +53,7 @@ window.onload = function () {
       }, function(){
         alert("can't access the server");
       });
-      this.$http.post(filename).then(function(response){
+      this.$http.post("./test.md").then(function(response){
         this.$set('content',converter.makeHtml(response.data));
       }, function(){
         alert("can't access the server");
