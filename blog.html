@@ -63,12 +63,24 @@ window.onload = function () {
 
 }
 </script>
+<script type="text/javascript">
+  function isSupportFileApi() {
+      if(window.File && window.FileList && window.FileReader && window.Blob) {
+          alert('The File APIs are supported in this browser!');//return true;
+      } else{
+      alert('The File APIs are not fully supported in this browser.');//return false;
+  }}
+</script>
 
 </head>
 <body>
 
 
 <div class="pure-g" id="app">
+  <div class="pure-u-1">
+    <div>test</div>
+    <div><button onclick="isSupportFileApi()">test html5</button></div>
+  </div>
   <div class="pure-u-1">
     <div>vue-resource抓取后台数据</div>
     <div>{{{ header }}}</div>
