@@ -1,5 +1,5 @@
 {
-  "ignore_cat":["css","js"],
+  "ignore_cat":["css","js","image"],
   "tpl_ver": "0.1.1",
   "username": "glamas",
   "repo": "glamas.github.io",

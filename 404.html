@@ -15,7 +15,7 @@
   <!-- <link href="./image/favicon.ico" rel="Shortcut Icon" /> -->
   <!-- <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css"> -->
   <link rel="stylesheet" type="text/css" href="/css/pure-min.css">
-  <link rel="stylesheet" type="text/css" href="/css/pure-extra.css">
+  <link rel="stylesheet" type="text/css" href="/css/style.css">
   <!--[if lte IE 8]>
       <link rel="stylesheet" type="text/css" href="/css/grids-responsive-old-ie-min.css">
   <![endif]-->
@@ -27,96 +27,26 @@
   <script type="text/javascript" src="/js/vue-resource.min.js"></script>
   <script type="text/javascript" src="/js/showdown.min.js"></script>
   <!-- <script type="text/javascript" src="./js/marked.js"></script> -->
-
-  <script type="text/javascript">
-  // var username = 'glamas';
-  // var repo = 'glamas.github.io';
-  // var github_api = 'https://api.github.com/repos/';
-  window.onload = function () {
-    var default_config = {
-      "ignore_cat":["css","js"],
-      "tpl_ver": "0.1.0",
-      "username": "glamas",
-      "repo": "glamas.github.io",
-      "github_api": "https://api.github.com/repos/"
-    }
-    var converter = new showdown.Converter();
-    // converter.setOption('noHeaderId', true);
-    wm = new Vue({
-      el: '#app',
-      data: {
-        config: default_config,
-        filename: ((window.location.pathname).match(/\/([^\/?#]+).html$/i) || [,''])[1]+".md",
-        category: [],
-        header: '',
-        content: ''
-      },
-      ready:function(){
-        //get config first
-        this.$http.get('/config.json?t='+Math.random(),{"headers":{'Cache-Control': 'no-cache',"If-Modified-Since":"0"}}).then(function(response){
-          this.$set('config',response.data);
-
-          //get template
-          this.$http.get('/test.tpl?v='+this.config.tpl_ver).then(function(response){
-            this.$set('header',response.data);
-          }, function(){
-            alert("can't access template");
-            this.$set('header',"<p>default content</p>");
-          });
-
-          //get category
-          this.$http.get(this.config.github_api+this.config.username+'/'+this.config.repo+'/contents').then(function(response){
-            var tmp=[]
-            for (var i = response.data.length - 1; i >= 0; i--) {
-              if (response.data[i].type == "dir" && this.config.ignore_cat.indexOf(response.data[i].name) == -1) {
-                tmp.push({'category':response.data[i].name})
-              }
-            }
-            this.$set('category',tmp);
-          }, function(){
-            alert("can't access github api");
-            this.$set('category',[1,2,3]);
-          });
-
-          //get content
-          this.$http.get(this.filename).then(function(response){
-            this.$set('content',converter.makeHtml(response.data));
-          }, function(){
-            alert("can't access markdown file");
-            this.$set('content',"<p>default content</p>");
-          });
-        }, function(){
-          alert("can't access config file");
-          this.$set('config',{});
-        });
-        //end load data
-      },
-    })
-
-  }
-  </script>
+  <script type="text/javascript" src="/js/main.js"></script>
 
 </head>
 <body>
 
-<div class="pure-g" id="app">
-  <div class="pure-u-1">
-    <div>vue-resource抓取后台数据</div>
-    <div>{{{ header }}}</div>
-  </div>
-  <div class="pure-u-1">
-    <div>markdown test</div>
-    <div>{{{ content }}}</div>
-  </div>
-  <div class="pure-u-1">
-    <div>github content test</div>
+<div class="pure-g wrap center" id="app">
+  <!-- tags / left part -->
+  <div class="pure-u-1-4 tags-left">
+    <div>category</div>
     <div>
       <ul>
         <li v-for="item in category">{{ item.category }}</li>
       </ul>
     </div>
   </div>
-
+  <!-- markdown content / right part -->
+  <div class="pure-u-3-4 content">
+    <div>{{{ content }}}</div>
+  </div>
+  <div class="clear:both;"></div>
 
 </div>
 

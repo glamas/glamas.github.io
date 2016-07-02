@@ -5,4 +5,5 @@
 
 ```
 
-使用post避免ajax缓存
+[test2](test2.html)  
+[helloworld](tech/helloworld.html)  

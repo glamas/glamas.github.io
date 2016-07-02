@@ -1,0 +1,96 @@
+<html>
+<head>
+  <title>vue-js + pure-css</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Language" content="zh-CN" />
+  <meta name="Keywords" content="" />
+  <meta name="Description" content="" />
+  <meta name="Author" content="glamas" />
+  <meta name="Copyright" content="" />
+  <!-- <link href="./image/favicon.ico" rel="Shortcut Icon" /> -->
+  <!-- <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css"> -->
+  <link rel="stylesheet" type="text/css" href="./css/pure-min.css">
+  <link rel="stylesheet" type="text/css" href="./css/pure-extra.css">
+  <!--[if lte IE 8]>
+      <link rel="stylesheet" type="text/css" href="./css/grids-responsive-old-ie-min.css">
+  <![endif]-->
+  <!--[if gt IE 8]><!-->
+      <link rel="stylesheet" type="text/css" href="./css/grids-responsive-min.css">
+  <![endif]-->
+  <script type="text/javascript" src="./js/vue.js"></script>
+  <script type="text/javascript" src="./js/vue-resource.min.js"></script>
+
+<script type="text/javascript">
+window.onload = function () {
+  wm = new Vue({
+    el: '#app',
+    data: {
+      todos: [],
+      list: []
+    },
+    ready:function(){
+      this.$http.get('./api.php').then(function(response){
+        this.$set('todos',response.data.todos);
+        this.$set('list',response.data.list);
+      }, function(){
+        alert("can't access the server");
+      });
+    },
+    methods:{
+      title_change:function(){
+        window.document.title = 'title had changed';
+      },
+      data_change:function(){
+        this.$http.get('./api.php',{reflash:true}).then(function(response){
+          this.$set('todos',response.data.todos);
+        }, function(){
+          alert("can't access the server");
+        });
+      },
+      delete_item:function(id){
+        alert(id);
+      }
+    },
+  })
+
+}
+</script>
+
+</head>
+<body>
+
+
+<div class="pure-g"  id="app">
+  <div class="pure-u-1">  
+    <div>vue-resource抓取后台数据</div>
+    <ul>
+      <li v-for="todo in todos">
+        {{ todo.text }}
+      </li>
+    </ul>
+    <button class="pure-button pure-button-primary" v-on:click="title_change">点击改变网页标题</button>
+    <button class="pure-button pure-button-primary" v-on:click="data_change">点击改变数据</button>
+        <table class="pure-table pure-table-striped">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>内容</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="data in list">
+                <td>{{ data.id }}</td>
+                <td>{{ data.text }}</td>
+                <td><a href="javascript:void(0);" v-on:click="delete_item(data.id)">点击操作</a></td>
+            </tr>
+        </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+</body>
+</html>
