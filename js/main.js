@@ -21,6 +21,7 @@ window.onload = function () {
       //get config first
       this.$http.get('/config.json?t='+Math.random(),{"headers":{'Cache-Control': 'no-cache',"If-Modified-Since":"0"}}).then(function(response){
         this.$set('config',response.data);
+        this.$set('filename',((window.location.pathname).match(/\/([^\/?#]+).html$/i) || [,''])[1]+this.config.markdown_ext);
 
         //get category
         this.$http.get(this.config.github_api+this.config.username+'/'+this.config.repo+'/contents').then(function(response){
