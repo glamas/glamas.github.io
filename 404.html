@@ -7,6 +7,7 @@
   <meta http-equiv="Content-Language" content="zh-CN" />
   <meta http-equiv="pragma" content="no-cache">
   <meta http-equiv="cache-control" content="no-cache">
+  <meta http-equiv="cache-control" content="no-store">
   <meta name="Keywords" content="" />
   <meta name="Description" content="" />
   <meta name="Author" content="glamas" />
@@ -28,13 +29,16 @@
   <!-- <script type="text/javascript" src="./js/marked.js"></script> -->
 
   <script type="text/javascript">
-  var username = 'glamas';
-  var repo = 'glamas.github.io';
-  var github_api = 'https://api.github.com/repos/';
+  // var username = 'glamas';
+  // var repo = 'glamas.github.io';
+  // var github_api = 'https://api.github.com/repos/';
   window.onload = function () {
     var default_config = {
       "ignore_cat":["css","js"],
-      "tpl_ver": "0.1.0"
+      "tpl_ver": "0.1.0",
+      "username": "glamas",
+      "repo": "glamas.github.io",
+      "github_api": "https://api.github.com/repos/"
     }
     var converter = new showdown.Converter();
     // converter.setOption('noHeaderId', true);
@@ -49,19 +53,19 @@
       },
       ready:function(){
         //get config first
-        this.$http.get('/config.json').then(function(response){
+        this.$http.get('/config.json?t='+Math.random(),{"headers":{'Cache-Control': 'no-cache',"If-Modified-Since":"0"}}).then(function(response){
           this.$set('config',response.data);
 
           //get template
           this.$http.get('/test.tpl?v='+this.config.tpl_ver).then(function(response){
             this.$set('header',response.data);
           }, function(){
-            alert("can't access the server");
+            alert("can't access template");
             this.$set('header',"<p>default content</p>");
           });
 
           //get category
-          this.$http.get(github_api+username+'/'+repo+'/contents').then(function(response){
+          this.$http.get(this.config.github_api+this.config.username+'/'+this.config.repo+'/contents').then(function(response){
             var tmp=[]
             for (var i = response.data.length - 1; i >= 0; i--) {
               if (response.data[i].type == "dir" && this.config.ignore_cat.indexOf(response.data[i].name) == -1) {
@@ -70,7 +74,7 @@
             }
             this.$set('category',tmp);
           }, function(){
-            alert("can't access the server");
+            alert("can't access github api");
             this.$set('category',[1,2,3]);
           });
 
@@ -78,11 +82,11 @@
           this.$http.get(this.filename).then(function(response){
             this.$set('content',converter.makeHtml(response.data));
           }, function(){
-            alert("can't access the server");
+            alert("can't access markdown file");
             this.$set('content',"<p>default content</p>");
           });
         }, function(){
-          alert("can't access the server");
+          alert("can't access config file");
           this.$set('config',{});
         });
         //end load data

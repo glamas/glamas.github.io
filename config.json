@@ -1,4 +1,7 @@
 {
   "ignore_cat":["css","js"],
-  "tpl_ver": "0.1.1"
+  "tpl_ver": "0.1.1",
+  "username": "glamas",
+  "repo": "glamas.github.io",
+  "github_api": "https://api.github.com/repos/"
 }
