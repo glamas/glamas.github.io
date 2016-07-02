@@ -28,44 +28,62 @@
   <!-- <script type="text/javascript" src="./js/marked.js"></script> -->
 
   <script type="text/javascript">
-    window.onload = function () {
-      var filename = ((window.location.pathname).match(/\/([^\/?#]+).html$/i) || [,''])[1]+".md";
-      // alert(document.referer);
-      // var marked = new marked();
-      // marked.setOptions({
-      //   renderer: new marked.Renderer(),
-      //   gfm: true,
-      //   tables: true,
-      //   breaks: false,
-      //   pedantic: false,
-      //   sanitize: true,
-      //   smartLists: true,
-      //   smartypants: false
-      // });
-      var converter = new showdown.Converter();
-      // converter.setOption('noHeaderId', true);
-      wm = new Vue({
-        el: '#app',
-        data: {
-          header: '',
-          content: ''
-        },
-        ready:function(){
-          this.$http.get('/test.tpl?v=0.1.0').then(function(response){
-            this.$set('header',response.data);
-          }, function(){
-            alert("can't access the server");
-          });
-          this.$http.get(filename).then(function(response){
-          // this.$http.get("./test.md").then(function(response){
-            this.$set('content',converter.makeHtml(response.data));
-          }, function(){
-            alert("can't access the server");
-          });
-        },
-      })
+  var username = 'glamas';
+  var repo = 'glamas.github.io';
+  var github_api = 'https://api.github.com/repos/';
+  window.onload = function () {
+    // var filename = ((window.location.pathname).match(/\/([^\/?#]+).html$/i) || [,''])[1]+".md";
+    // alert(document.referer);
+    // var marked = new marked();
+    // marked.setOptions({
+    //   renderer: new marked.Renderer(),
+    //   gfm: true,
+    //   tables: true,
+    //   breaks: false,
+    //   pedantic: false,
+    //   sanitize: true,
+    //   smartLists: true,
+    //   smartypants: false
+    // });
+    var converter = new showdown.Converter();
+    // converter.setOption('noHeaderId', true);
+    wm = new Vue({
+      el: '#app',
+      data: {
+        filename: ((window.location.pathname).match(/\/([^\/?#]+).html$/i) || [,''])[1]+".md",
+        category: [],
+        header: '',
+        content: ''
+      },
+      ready:function(){
+        this.$http.get('/test.tpl?v=0.1.0').then(function(response){
+          this.$set('header',response.data);
+        }, function(){
+          alert("can't access the server");
+          this.$set('header',"<p>default content</p>");
+        });        
+        this.$http.get(github_api+username+'/'+repo+'/contents').then(function(response){
+          var tmp=[]
+          for (var i = response.data.length - 1; i >= 0; i--) {
+            if (response.data[i].type == "dir") {
+              tmp.push({'category':response.data[i].name})
+            }
+          }
+          this.$set('category',tmp);
+        }, function(){
+          alert("can't access the server");
+          this.$set('category',[1,2,3]);
+        });
+        this.$http.get(this.filename).then(function(response){
+          this.$set('content',converter.makeHtml(response.data));
+        }, function(){
+          alert("can't access the server");
+          this.$set('content',"<p>default content</p>");
+        });
+      },
+    })
 
-    }
+  }
   </script>
 
 </head>
@@ -79,6 +97,14 @@
   <div class="pure-u-1">
     <div>markdown test</div>
     <div>{{{ content }}}</div>
+  </div>
+  <div class="pure-u-1">
+    <div>github content test</div>
+    <div>
+      <ul>
+        <li v-for="item in category">{{ item.category }}</li>
+      </ul>
+    </div>
   </div>
 
 
