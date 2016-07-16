@@ -27,6 +27,17 @@
   <script type="text/javascript" src="/js/vue-resource.min.js"></script>
   <script type="text/javascript" src="/js/showdown.min.js"></script>
   <!-- <script type="text/javascript" src="./js/marked.js"></script> -->
+  <script type="text/x-mathjax-config">
+	MathJax.Hub.Config({
+	  config: ["MMLorHTML.js"],
+	  jax: ["input/TeX", "output/HTML-CSS", "output/NativeMML"],
+	  extensions: ["MathMenu.js", "MathZoom.js"],
+	  TeX: {
+		equationNumbers: {autoNumber: "AMS"}
+	  }
+	});
+  </script>
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js"></script></head>
   <script type="text/javascript" src="/js/main.js"></script>
 
 </head>
