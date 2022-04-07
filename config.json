@@ -1,7 +1,0 @@
-{
-  "username": "glamas",
-  "repo": "glamas.github.io",
-  "github_api": "https://api.github.com/repos/",
-  "ignore_dir":["css","js","image","test"],
-  "markdown_ext":".md"
-}

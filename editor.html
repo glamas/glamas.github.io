@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+		<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/marked@2.0.3/lib/marked.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/glamas/store/javascript/texdown.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/diff@5.0.0/dist/diff.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/ace-builds@1.4.12/src-noconflict/ace.min.js"></script>
+		<style type="text/css">
+article{max-width:40em;margin-left:auto;margin-right:auto}
+h1,h2,h3,h4,h5,h6,h7{margin-top:1.2em;margin-bottom:0.5em}
+h1{text-align: center;}
+a:link,a:visited{color:#03c;text-decoration:none}
+a:hover,a:active{color:#03f;text-decoration:underline}
+img{max-width:100%}
+pre,code,samp,kbd{font-family:monospace,monospace;font-size:0.9em;color:#444;background:#eee}
+pre code,pre samp,pre kbd{font-size:1em}
+pre{padding:0.5em;overflow:auto}
+blockquote{border-left:medium solid #ccc;margin-left:0;margin-right:0;padding:0.5em;background:#eee}
+blockquote *:first-child{margin-top:0}
+blockquote *:last-child{margin-bottom:0}
+table{border-collapse:collapse}
+table th,td{border:thin solid #999;padding:0.3em 0.4em;}
+table th{background-color: #ccc;}
+table tr:nth-child(even) { background-color: #eee}
+input[type=checkbox]{margin-top:0;width:16px;height:16px;outline:0;border:1px solid #c9c9c9;border-radius:2px;background-color:#fff;color:#fff;text-align:center;line-height:15px;-webkit-appearance:none;-moz-appearance:none;-ms-appearance:none;-o-appearance:none;appearance:none}
+input[type=checkbox]:hover{border-color:#999}
+input[type=checkbox]:checked{border:1px solid #999;background-color:#999;color:#fff}
+input[type=checkbox]:after{content:"."}
+input[type=checkbox]:checked:after{content:"✔"}
+		</style>
+
+		<style type="text/css">
+body{margin:0}
+#layout-nav{height:35px}
+#layout-main{width:100%;height:100%}
+#layout-editor{position:absolute;top:35px;bottom:35px;width:calc(50% - 3px)}
+#layout-slide{width:6px;cursor:ew-resize;background:radial-gradient(rgba(0,0,0,.1) 21%,transparent 22%) 3px 3px,radial-gradient(rgba(0,0,0,.1) 21%,transparent 22%) 0 0;background-size:6px 6px;position:absolute;top:35px;bottom:35px;left:calc(50% - 3px)}
+#layout-content{overflow:auto;position:absolute;margin:0 3px;top:35px;bottom:35px;left:50%;width:calc(50% - 3px)}
+#layout-footer{position:absolute;height:30px;bottom:0}
+		</style>
+
+		<style type="text/css">
+.modal-box{position:fixed;min-width:20rem;max-width:32rem;background-color:white;top:0;left:0;margin-top:8rem;border-radius:4px;overflow:hidden;z-index:111;visibility:hidden}
+.modal-min{width:15rem}
+.modal-max{width:40rem}
+.modal-box-top{position:relative;width:100%;height:2rem;border-bottom:1px solid #cccccc;padding:0.3rem;box-sizing:border-box;overflow:hidden}
+.modal-box-content{width:100%;min-height:16rem;max-height:28rem;padding:0.5rem;box-sizing:border-box;overflow:auto}
+.modal-box-bottom{width:100%;height:4rem;border-top:1px solid #cccccc;padding:0.5rem;overflow:hidden;box-sizing:border-box}
+.modal-box-title{display:block;text-align:center;font-size:1rem;float:left}
+.modal-close{position:absolute;top:0;right:0;height:100%;width:2.5rem;font-size:1.5rem;background-color:white;color:#a5a5a5;outline:none}
+		</style>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	</head>
+	<body>
+		<div id="layout-nav">
+			<button type="button" value="render" onclick="render()">render</button>
+			<button type="button" value="loadFile" onclick="loadFile('draft', true)">diff</button>
+			<button type="button" value="loadFile" onclick="loadFile('draft')">loadFile</button>
+			<!-- <button type="button" value="updateFile" onclick="updateFile('index', editor.getValue())">updateFile</button> -->
+			<!-- <button type="button" value="list" onclick="list('/')">list</button> -->
+			<!-- <button type="button" value="modalOpen" onclick="modalOpen()">modalOpen</button> -->
+		</div>
+		<div id="layout-main">
+			<div id="layout-editor"></div>
+			<div id="layout-slide"></div>
+			<div id="layout-content"></div>
+		</div>
+		<div id="layout-footer"> copyright</div>
+		<div class="modal-box" id="modal-diff">
+			<div class="modal-box-top">
+				<div class="modal-box-title" id="modal-title">标题</div>
+				<button onclick="modalClose()" class="modal-close">&times;</button>
+			</div>
+			<div class="modal-box-content" id="modal-content"></div>
+			<!--<div class="modal-box-bottom"></div>-->
+		</div>
+		<script>
+ace.config.set(
+	"basePath",
+	"https://cdn.jsdelivr.net/npm/ace-builds@1.4.12/src-noconflict/"
+);
+//ace.config.setModuleUrl(
+//	"ace/mode/javascript_worker",
+//	"https://cdn.jsdelivr.net/npm/ace-builds@1.4.12/src-noconflict/worker-javascript.js"
+//);
+var editor = ace.edit("layout-editor");
+editor.setTheme("ace/theme/twilight");
+editor.session.setMode("ace/mode/markdown");
+editor.setOption("wrap", true)
+//var text = editor.getValue();
+
+var renderer = new marked.Renderer();
+var renderer_ref = new marked.Renderer();
+var ref = 0;
+var footnotes = [];
+const referencePrefix = "fnref";
+const footnotePrefix = "fn";
+renderer.code = function (code, language) {
+	if(code.match(/^graph/)
+		||code.match(/^sequenceDiagram/)
+		||code.match(/^gantt/)
+		||code.match(/^classDiagram/)
+	){
+		return '<div class="mermaid">'+code+'</div>';
+	}
+	else{
+		return '<pre><code>'+code+'</code></pre>';
+	}
+};
+renderer.link = function (href, title, text) {
+	if (text[0] == "^") {
+		ref += 1;
+		title = href;
+		text = `<sup id="${referencePrefix}:${ref}">[${ref}]</sup>`;
+		href = `#${footnotePrefix}:${ref}`;
+		footnotes.push(`${title} <a href="#${referencePrefix}:${ref}" id="${footnotePrefix}:${ref}">↩</a>`)
+	}
+	return renderer_ref.link(href, title, text);
+};
+renderer.heading = function (text, level) {
+	var idReg = new RegExp("\{#(.*?)\}");
+	var custom_id = text.match(idReg);
+	text = text.replace(idReg, "").trimRight();
+	var escapedText = text.replace(idReg, "").trimRight();
+	escapedText = escapedText.toLowerCase().replace(/<\/?\w+>/g, "").replace(/[^\w]+/g, '-');
+	custom_id = (custom_id && custom_id[1]) || escapedText;
+
+	return '<h' + level + '>' + text +
+		'<a id="' + custom_id + '" href="#' + custom_id +'"></a>' +
+		'</h' + level + '>';
+};
+function render() {
+	var text = editor.getValue();
+	var yamlStr = ""
+	var m = text.match(/^\s*---$/m);
+	if ( m && m.index == 0) {
+		text = text.slice(m[0].length);
+		index = text.search(/^---$/m);
+		yamlStr = text.slice(0, index);
+		text = text.slice(index + 4);
+	}
+	var yamlObj = jsyaml.load(yamlStr);
+	//console.log(yamlObj)
+	var markdownOnly = false;
+	if (yamlObj && yamlObj.markdownOnly) {
+		markdownOnly = true;
+	}
+	ref = 0;
+	footnotes = [];
+	text = texdown.renderToString(text, {
+		katex: {
+			delimiters: [
+				{left: '$$', right: '$$', display: true},
+				{left: '$', right: '$', display: false},
+				{left: '\\(', right: '\\)', display: false},
+				{left: '\\[', right: '\\]', display: true}
+			]
+		},
+		marked: {renderer: renderer, breaks: true},
+		markdownOnly: markdownOnly,
+	});
+	if (footnotes.length > 0) {
+		text += `<hr />
+		<ol>
+			<li>${footnotes.map(f => f).join('</li>\n<li>')}</li>
+		</ol>
+		`;
+	}
+	document.getElementById('layout-content').innerHTML = text;
+	mermaid.init();
+}
+window.onload = render();
+
+function ajax(option) {
+	var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP"),
+		requestData = option.data,
+		requestUrl = option.url,
+		requestMethod = option.method;
+		responseType = option.type || "text"
+	if ('POST' != requestMethod && requestData) {
+		var query_string = '';
+		for(var item in requestData) {
+			query_string += item + '=' + requestData[item] + '&';
+		}
+		requestUrl.indexOf('?') > -1 ? requestUrl = requestUrl + '&' + query_string : requestUrl = requestUrl + '?' + query_string;
+		requestData = null;
+	} else {
+		requestData = "object" == typeof requestData ? JSON.stringify(requestData) : requestData;
+	}
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState == ("number" == typeof XMLHttpRequest.DONE ? XMLHttpRequest.DONE : 4)) {
+			if (200 == xhr.status) {
+				var response = xhr.response || xhr.responseText || {};
+				//option.success && option.success(response);
+				option.success && option.success('json' == responseType ? JSON.parse(response) : response);
+			} else {
+				option.error && option.error(xhr, xhr.statusText);
+			}
+		}
+	};
+	xhr.open(requestMethod, requestUrl, true);
+	xhr.ontimeout = function () {
+		option.timeout && option.timeout(xhr, xhr.statusText);
+	};
+	xhr.timeout = option.timeout || 0;
+	xhr.setRequestHeader && xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
+	xhr.withCredentials = (option.xhrFields || {}).withCredentials;
+	xhr.send(requestData);
+}
+function list(path) {
+	ajax({
+		url: "/editor",
+		method: "POST",
+		type: "json",
+		data: {
+			action: "listDir",
+			path: path
+		},
+		success: function (rsp) {
+			console.log(rsp)
+		}
+	});
+}
+function loadFile(path, diff) {
+	diff = diff || false;
+	ajax({
+		url: "/editor",
+		method: "POST",
+		type: "json",
+		data: {
+			action: "getFile",
+			path: path
+		},
+		success: function (rsp) {
+			var content = rsp.content
+			if (diff) {
+				var diff_result = Diff.diffLines(content, editor.getValue())
+				diff2html(diff_result);
+				modalOpen();
+			} else {
+				editor.setValue(content);
+				render()
+			}
+		}
+	});
+}
+function updateFile(path, content) {
+	ajax({
+		url: "/editor",
+		method: "POST",
+		type: "json",
+		data: {
+			action: "update",
+			path: path,
+			type: "content",
+			content: content
+		},
+		success: function (rsp) {
+			console.log(rsp)
+		}
+	});
+}
+function diff2html(diff) {
+	function htmlFragment(diff_group, record) {
+		if (diff_group.length >0 ) {
+			record.diff_count += 1;
+			var count_add = 0, count_del = 0;
+			var div_add = document.createElement('div');
+			var div_del = document.createElement('div');
+			for (var j in diff_group) {
+				item = diff_group[j];
+				if (item.added) {
+					div_add.style = "white-space: pre;color:green";
+					div_add.appendChild(document.createTextNode("+" + item.value.split("\n").join("\n+").replace(/(.*)\n\+$/,"$1↵")));
+					count_add = item.count;
+				}
+				if (item.removed) {
+					div_del.style = "white-space: pre;color:red";
+					div_del.appendChild(document.createTextNode("-" + item.value.split("\n").join("\n-").replace(/(.*)\n\-$/,"$1↵")));
+					count_del = item.count
+				}
+			}
+			if (count_add > 0 || count_del > 0){
+				var div_info = document.createElement('div');
+				var info = "@@ " + "-" + record.line_old + ", " + count_del + " +" + record.line_new + "," + count_add + " @@"
+				div_info.appendChild(document.createTextNode(info));
+				fragment.appendChild(div_info);
+				if (count_del) {fragment.appendChild(div_del);}
+				if (count_add) {fragment.appendChild(div_add);}
+			}
+			record.line_old += count_del;
+			record.line_new += count_add;
+		}
+	}
+	var display = document.getElementById('modal-content'),
+	fragment = document.createDocumentFragment();
+	display.innerHTML = "";
+	var diff_group = [];
+	var r = {
+		diff_count: 0,
+		line_old: 1,
+		line_new: 1,
+	}
+	for (var i in diff) {
+		var part = diff[i];
+		var add_group = part.added || part.removed ? true : false;
+		if (add_group) {
+			diff_group.push(part)
+		} else {
+			if (diff_group.length >0 ) {
+				htmlFragment(diff_group, r)
+				diff_group = [];
+			}
+			r.line_old += part.count;
+			r.line_new += part.count;
+		}
+	}
+	if (diff_group.length >0 ) {
+		htmlFragment(diff_group, r)
+	}
+	display.appendChild(fragment);
+	var modal_title = document.getElementById('modal-title');
+	modal_title.innerHTML = r.diff_count > 0 ? "有"+r.diff_count+"个修改" : "没有修改";
+}
+
+function modalOpen() {
+    let modal = document.getElementsByClassName("modal-box")[0];
+    let documentWidth = window.innerWidth;
+    let documentHeight = window.innerHeight;
+    let modalWidth = modal.offsetWidth;
+    modal.style.left = ((documentWidth - modalWidth) / 2.0).toString() + "px";
+    modal.style.visibility = "visible";
+}
+
+function modalClose() {
+    let modal = document.getElementsByClassName("modal-box")[0];
+    modal.style.visibility = "hidden";
+}
+		</script>
+	</body>
+</html>
