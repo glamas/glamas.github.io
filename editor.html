@@ -2,14 +2,6 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
-		<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/marked@2.0.3/lib/marked.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/gh/glamas/store/javascript/texdown.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/diff@5.0.0/dist/diff.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/ace-builds@1.4.12/src-noconflict/ace.min.js"></script>
 		<style type="text/css">
 article{max-width:40em;margin-left:auto;margin-right:auto}
 h1,h2,h3,h4,h5,h6,h7{margin-top:1.2em;margin-bottom:0.5em}
@@ -45,25 +37,38 @@ body{margin:0}
 		</style>
 
 		<style type="text/css">
-.modal-box{position:fixed;min-width:20rem;max-width:32rem;background-color:white;top:0;left:0;margin-top:8rem;border-radius:4px;overflow:hidden;z-index:111;visibility:hidden}
-.modal-min{width:15rem}
-.modal-max{width:40rem}
-.modal-box-top{position:relative;width:100%;height:2rem;border-bottom:1px solid #cccccc;padding:0.3rem;box-sizing:border-box;overflow:hidden}
-.modal-box-content{width:100%;min-height:16rem;max-height:28rem;padding:0.5rem;box-sizing:border-box;overflow:auto}
-.modal-box-bottom{width:100%;height:4rem;border-top:1px solid #cccccc;padding:0.5rem;overflow:hidden;box-sizing:border-box}
-.modal-box-title{display:block;text-align:center;font-size:1rem;float:left}
-.modal-close{position:absolute;top:0;right:0;height:100%;width:2.5rem;font-size:1.5rem;background-color:white;color:#a5a5a5;outline:none}
+.popup-bg{width:100%;height:100%;position:fixed;top:0;left:-100%;background-color:rgba(0,0,0,.6);z-index:1}
+.popup-fg{width:95%;min-height:30%;max-height:75%;background:#fffdfa;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:3px;overflow:auto}
+a.headerlink{color:#03f;font-size:0.8em;padding:0 4px 0 4px;text-decoration:none}
+a.headerlink:hover{background-color:#03f;color:white}
+a.headerlink{visibility:hidden}
+h1:hover > a.headerlink,h2:hover > a.headerlink,h3:hover > a.headerlink,h4:hover > a.headerlink,h5:hover > a.headerlink,h6:hover > a.headerlink,dt:hover > a.headerlink,caption:hover > a.headerlink{visibility:visible}
 		</style>
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+		<link rel="stylesheet" href="https://unpkg.com/katex/dist/katex.min.css">
+		<script src="https://unpkg.com/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+		<script src="https://unpkg.com/katex/dist/katex.min.js"></script>
+		<script src="https://unpkg.com/marked/marked.min.js"></script>
+		<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/gh/glamas/store/javascript/texdown.min.js"></script>
+		<script src="https://unpkg.com/diff@5.0.0/dist/diff.js"></script>
+		<script src="https://unpkg.com/ace-builds/src-noconflict/ace.js"></script>
+		<script type="text/javascript">
+function popup_show(id){
+	ele = document.getElementById("popup"+id);
+	ele.style.display = "block";
+	ele.style.left = 0;
+}
+function popup_trigger(ele){
+	if (ele.style.display == "None") ele.style.display = "block";
+	else ele.style.display = "None";
+}
+		</script>
 	</head>
 	<body>
 		<div id="layout-nav">
 			<button type="button" value="render" onclick="render()">render</button>
-			<button type="button" value="loadFile" onclick="loadFile('draft', true)">diff</button>
-			<button type="button" value="loadFile" onclick="loadFile('draft')">loadFile</button>
-			<!-- <button type="button" value="updateFile" onclick="updateFile('index', editor.getValue())">updateFile</button> -->
-			<!-- <button type="button" value="list" onclick="list('/')">list</button> -->
-			<!-- <button type="button" value="modalOpen" onclick="modalOpen()">modalOpen</button> -->
+			<button type="button" value="loadFile" onclick="loadFile('example.md')">Load Example</button>
 		</div>
 		<div id="layout-main">
 			<div id="layout-editor"></div>
@@ -101,16 +106,31 @@ var footnotes = [];
 const referencePrefix = "fnref";
 const footnotePrefix = "fn";
 renderer.code = function (code, language) {
-	if(code.match(/^graph/)
-		||code.match(/^sequenceDiagram/)
-		||code.match(/^gantt/)
-		||code.match(/^classDiagram/)
-	){
-		return '<div class="mermaid">'+code+'</div>';
+	var html_code = '<pre><code>'+code+'</code></pre>';
+	if (language !== undefined){
+		if(language.match(/^mermaid/)){
+			html_code = '<div class="mermaid">'+code+'</div>';
+		}
+		if (language.match(/popup/)){
+			pop_id = language.substring(language.indexOf("popup")+5).trim();
+			html_code = '<div class="popup-bg" id="popup'+pop_id+'" onclick="popup_trigger(this)"><div class="popup-fg" onclick="event.stopPropagation()">'+html_code+'</div></div>';
+		}
 	}
-	else{
-		return '<pre><code>'+code+'</code></pre>';
+	return html_code
+};
+renderer.heading = function (text, level) {
+	var html_code = '<h' + level + '>' + text + '</h' + level + '>';
+	var idReg = new RegExp("\{#(.*?)\}");
+	var custom_id = text.match(idReg);
+	custom_id = custom_id && custom_id[1]
+	if (custom_id){
+		text = text.replace(idReg, "").trimRight();
+		var escapedText = text.replace(idReg, "").trimRight();
+		escapedText = escapedText.toLowerCase().replace(/<\/?\w+>/g, "");
+		html_code = '<h' + level + ' id="' + custom_id + '">' + escapedText + '<a class="headerlink" href="#' + custom_id +'">¶</a>' + '</h' + level + '>';
 	}
+
+	return html_code;
 };
 renderer.link = function (href, title, text) {
 	if (text[0] == "^") {
@@ -120,19 +140,12 @@ renderer.link = function (href, title, text) {
 		href = `#${footnotePrefix}:${ref}`;
 		footnotes.push(`${title} <a href="#${referencePrefix}:${ref}" id="${footnotePrefix}:${ref}">↩</a>`)
 	}
+	if (text[0] == "#") {
+		title = text;
+		href = `javascript:popup_show('${text}')`;
+		text = `<sup>[show]</sup>`;
+	}
 	return renderer_ref.link(href, title, text);
-};
-renderer.heading = function (text, level) {
-	var idReg = new RegExp("\{#(.*?)\}");
-	var custom_id = text.match(idReg);
-	text = text.replace(idReg, "").trimRight();
-	var escapedText = text.replace(idReg, "").trimRight();
-	escapedText = escapedText.toLowerCase().replace(/<\/?\w+>/g, "").replace(/[^\w]+/g, '-');
-	custom_id = (custom_id && custom_id[1]) || escapedText;
-
-	return '<h' + level + '>' + text +
-		'<a id="' + custom_id + '" href="#' + custom_id +'"></a>' +
-		'</h' + level + '>';
 };
 function render() {
 	var text = editor.getValue();
@@ -212,30 +225,12 @@ function ajax(option) {
 	xhr.withCredentials = (option.xhrFields || {}).withCredentials;
 	xhr.send(requestData);
 }
-function list(path) {
-	ajax({
-		url: "/editor",
-		method: "POST",
-		type: "json",
-		data: {
-			action: "listDir",
-			path: path
-		},
-		success: function (rsp) {
-			console.log(rsp)
-		}
-	});
-}
 function loadFile(path, diff) {
 	diff = diff || false;
 	ajax({
-		url: "/editor",
-		method: "POST",
+		url: "/" + path,
+		method: "GET",
 		type: "json",
-		data: {
-			action: "getFile",
-			path: path
-		},
 		success: function (rsp) {
 			var content = rsp.content
 			if (diff) {
@@ -246,22 +241,6 @@ function loadFile(path, diff) {
 				editor.setValue(content);
 				render()
 			}
-		}
-	});
-}
-function updateFile(path, content) {
-	ajax({
-		url: "/editor",
-		method: "POST",
-		type: "json",
-		data: {
-			action: "update",
-			path: path,
-			type: "content",
-			content: content
-		},
-		success: function (rsp) {
-			console.log(rsp)
 		}
 	});
 }
@@ -326,20 +305,6 @@ function diff2html(diff) {
 	display.appendChild(fragment);
 	var modal_title = document.getElementById('modal-title');
 	modal_title.innerHTML = r.diff_count > 0 ? "有"+r.diff_count+"个修改" : "没有修改";
-}
-
-function modalOpen() {
-    let modal = document.getElementsByClassName("modal-box")[0];
-    let documentWidth = window.innerWidth;
-    let documentHeight = window.innerHeight;
-    let modalWidth = modal.offsetWidth;
-    modal.style.left = ((documentWidth - modalWidth) / 2.0).toString() + "px";
-    modal.style.visibility = "visible";
-}
-
-function modalClose() {
-    let modal = document.getElementsByClassName("modal-box")[0];
-    modal.style.visibility = "hidden";
 }
 		</script>
 	</body>
